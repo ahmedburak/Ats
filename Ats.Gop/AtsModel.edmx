@@ -1,0 +1,267 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="AtsModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AnnouncementDefinitions">
+          <Key>
+            <PropertyRef Name="PkId" />
+          </Key>
+          <Property Name="PkId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Url" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="TypeId" Type="tinyint" Nullable="false" />
+          <Property Name="RowCssSelector" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="ClickCssSelector" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="500" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Announcements">
+          <Key>
+            <PropertyRef Name="PkId" />
+          </Key>
+          <Property Name="PkId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TypeId" Type="tinyint" Nullable="false" />
+          <Property Name="Text" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="Url" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="Date" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AnnouncementTypes">
+          <Key>
+            <PropertyRef Name="PkId" />
+          </Key>
+          <Property Name="PkId" Type="tinyint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Emails">
+          <Key>
+            <PropertyRef Name="PkId" />
+          </Key>
+          <Property Name="PkId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EmailAddress" Type="nvarchar" MaxLength="250" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ExceptionLogs">
+          <Key>
+            <PropertyRef Name="PkId" />
+          </Key>
+          <Property Name="PkId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Message" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="SpecialMessage" Type="nvarchar" MaxLength="4000" />
+          <Property Name="InnerException" Type="nvarchar" MaxLength="4000" />
+          <Property Name="StackTrace" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="ExceptionDateTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_AnnouncementDefinitions_AnnouncementTypes">
+          <End Role="AnnouncementTypes" Type="Self.AnnouncementTypes" Multiplicity="1" />
+          <End Role="AnnouncementDefinitions" Type="Self.AnnouncementDefinitions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AnnouncementTypes">
+              <PropertyRef Name="PkId" />
+            </Principal>
+            <Dependent Role="AnnouncementDefinitions">
+              <PropertyRef Name="TypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Announcements_AnnouncementTypes">
+          <End Role="AnnouncementTypes" Type="Self.AnnouncementTypes" Multiplicity="1" />
+          <End Role="Announcements" Type="Self.Announcements" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AnnouncementTypes">
+              <PropertyRef Name="PkId" />
+            </Principal>
+            <Dependent Role="Announcements">
+              <PropertyRef Name="TypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="AtsModelStoreContainer">
+          <EntitySet Name="AnnouncementDefinitions" EntityType="Self.AnnouncementDefinitions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Announcements" EntityType="Self.Announcements" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AnnouncementTypes" EntityType="Self.AnnouncementTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Emails" EntityType="Self.Emails" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ExceptionLogs" EntityType="Self.ExceptionLogs" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_AnnouncementDefinitions_AnnouncementTypes" Association="Self.FK_AnnouncementDefinitions_AnnouncementTypes">
+            <End Role="AnnouncementTypes" EntitySet="AnnouncementTypes" />
+            <End Role="AnnouncementDefinitions" EntitySet="AnnouncementDefinitions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Announcements_AnnouncementTypes" Association="Self.FK_Announcements_AnnouncementTypes">
+            <End Role="AnnouncementTypes" EntitySet="AnnouncementTypes" />
+            <End Role="Announcements" EntitySet="Announcements" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="AtsModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="AnnouncementDefinition">
+          <Key>
+            <PropertyRef Name="PkId" />
+          </Key>
+          <Property Name="PkId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Url" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TypeId" Type="Byte" Nullable="false" />
+          <Property Name="RowCssSelector" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ClickCssSelector" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AnnouncementType" Relationship="Self.FK_AnnouncementDefinitions_AnnouncementTypes" FromRole="AnnouncementDefinitions" ToRole="AnnouncementTypes" />
+        </EntityType>
+        <EntityType Name="Announcement">
+          <Key>
+            <PropertyRef Name="PkId" />
+          </Key>
+          <Property Name="PkId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TypeId" Type="Byte" Nullable="false" />
+          <Property Name="Text" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Url" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="AnnouncementType" Relationship="Self.FK_Announcements_AnnouncementTypes" FromRole="Announcements" ToRole="AnnouncementTypes" />
+        </EntityType>
+        <EntityType Name="AnnouncementType">
+          <Key>
+            <PropertyRef Name="PkId" />
+          </Key>
+          <Property Name="PkId" Type="Byte" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AnnouncementDefinitions" Relationship="Self.FK_AnnouncementDefinitions_AnnouncementTypes" FromRole="AnnouncementTypes" ToRole="AnnouncementDefinitions" />
+          <NavigationProperty Name="Announcements" Relationship="Self.FK_Announcements_AnnouncementTypes" FromRole="AnnouncementTypes" ToRole="Announcements" />
+        </EntityType>
+        <EntityType Name="Email">
+          <Key>
+            <PropertyRef Name="PkId" />
+          </Key>
+          <Property Name="PkId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EmailAddress" Type="String" MaxLength="250" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ExceptionLog">
+          <Key>
+            <PropertyRef Name="PkId" />
+          </Key>
+          <Property Name="PkId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Message" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SpecialMessage" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="InnerException" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="StackTrace" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ExceptionDateTime" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <Association Name="FK_AnnouncementDefinitions_AnnouncementTypes">
+          <End Role="AnnouncementTypes" Type="Self.AnnouncementType" Multiplicity="1" />
+          <End Role="AnnouncementDefinitions" Type="Self.AnnouncementDefinition" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AnnouncementTypes">
+              <PropertyRef Name="PkId" />
+            </Principal>
+            <Dependent Role="AnnouncementDefinitions">
+              <PropertyRef Name="TypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Announcements_AnnouncementTypes">
+          <End Role="AnnouncementTypes" Type="Self.AnnouncementType" Multiplicity="1" />
+          <End Role="Announcements" Type="Self.Announcement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AnnouncementTypes">
+              <PropertyRef Name="PkId" />
+            </Principal>
+            <Dependent Role="Announcements">
+              <PropertyRef Name="TypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="AtsEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AnnouncementDefinitions" EntityType="Self.AnnouncementDefinition" />
+          <EntitySet Name="Announcements" EntityType="Self.Announcement" />
+          <EntitySet Name="AnnouncementTypes" EntityType="Self.AnnouncementType" />
+          <EntitySet Name="Emails" EntityType="Self.Email" />
+          <EntitySet Name="ExceptionLogs" EntityType="Self.ExceptionLog" />
+          <AssociationSet Name="FK_AnnouncementDefinitions_AnnouncementTypes" Association="Self.FK_AnnouncementDefinitions_AnnouncementTypes">
+            <End Role="AnnouncementTypes" EntitySet="AnnouncementTypes" />
+            <End Role="AnnouncementDefinitions" EntitySet="AnnouncementDefinitions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Announcements_AnnouncementTypes" Association="Self.FK_Announcements_AnnouncementTypes">
+            <End Role="AnnouncementTypes" EntitySet="AnnouncementTypes" />
+            <End Role="Announcements" EntitySet="Announcements" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="AtsModelStoreContainer" CdmEntityContainer="AtsEntities">
+          <EntitySetMapping Name="AnnouncementDefinitions">
+            <EntityTypeMapping TypeName="AtsModel.AnnouncementDefinition">
+              <MappingFragment StoreEntitySet="AnnouncementDefinitions">
+                <ScalarProperty Name="PkId" ColumnName="PkId" />
+                <ScalarProperty Name="Url" ColumnName="Url" />
+                <ScalarProperty Name="TypeId" ColumnName="TypeId" />
+                <ScalarProperty Name="RowCssSelector" ColumnName="RowCssSelector" />
+                <ScalarProperty Name="ClickCssSelector" ColumnName="ClickCssSelector" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Announcements">
+            <EntityTypeMapping TypeName="AtsModel.Announcement">
+              <MappingFragment StoreEntitySet="Announcements">
+                <ScalarProperty Name="PkId" ColumnName="PkId" />
+                <ScalarProperty Name="TypeId" ColumnName="TypeId" />
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="Url" ColumnName="Url" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AnnouncementTypes">
+            <EntityTypeMapping TypeName="AtsModel.AnnouncementType">
+              <MappingFragment StoreEntitySet="AnnouncementTypes">
+                <ScalarProperty Name="PkId" ColumnName="PkId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Emails">
+            <EntityTypeMapping TypeName="AtsModel.Email">
+              <MappingFragment StoreEntitySet="Emails">
+                <ScalarProperty Name="PkId" ColumnName="PkId" />
+                <ScalarProperty Name="EmailAddress" ColumnName="EmailAddress" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExceptionLogs">
+            <EntityTypeMapping TypeName="AtsModel.ExceptionLog">
+              <MappingFragment StoreEntitySet="ExceptionLogs">
+                <ScalarProperty Name="PkId" ColumnName="PkId" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="SpecialMessage" ColumnName="SpecialMessage" />
+                <ScalarProperty Name="InnerException" ColumnName="InnerException" />
+                <ScalarProperty Name="StackTrace" ColumnName="StackTrace" />
+                <ScalarProperty Name="ExceptionDateTime" ColumnName="ExceptionDateTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
