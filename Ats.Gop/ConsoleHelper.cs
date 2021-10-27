@@ -4,61 +4,6 @@ namespace Ats.Gop
 {
     public static class ConsoleHelper
     {
-        public static void WriteLine(Exception exception, string specialMessage)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(specialMessage);
-            Console.WriteLine();
-            Console.WriteLine(exception);
-            InsertLog(exception, specialMessage);
-            Console.WriteLine();
-            Console.ResetColor();
-        }
-
-        public static void WriteLine(string message, ConsoleColor? consoleColor = null)
-        {
-            var newMessage = $"{DateTime.Now:HH:mm:ss}: {message}";
-
-            Console.ForegroundColor = ConsoleColor.Green;
-
-            if (consoleColor.HasValue)
-            {
-                Console.ForegroundColor = consoleColor.Value;
-            }
-
-            Console.WriteLine(newMessage);
-            Console.WriteLine();
-            Console.ResetColor();
-        }
-
-        public static void Write(string message, ConsoleColor? consoleColor = null)
-        {
-            var newMessage = $"{DateTime.Now:HH:mm:ss}: {message}";
-
-            Console.ForegroundColor = ConsoleColor.Green;
-
-            if (consoleColor.HasValue)
-            {
-                Console.ForegroundColor = consoleColor.Value;
-            }
-
-            Console.WriteLine(newMessage);
-            Console.ResetColor();
-        }
-
-        public static void WriteBlankLine(byte? count = null)
-        {
-            if (!count.HasValue || count < 2)
-            {
-                count = 2;
-            }
-
-            for (int i = 0; i < count; i++)
-            {
-                Console.WriteLine();
-            }
-        }
-
         public static void InsertLog(Exception obj, string specialMessage)
         {
             try
@@ -98,6 +43,80 @@ namespace Ats.Gop
                 WriteLine(exception, null);
                 WriteLine("Log kaydederken bir hata oluştu!", ConsoleColor.Red);
             }
+        }
+
+        public static void WriteLine(Exception exception, string specialMessage)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(specialMessage);
+            Console.WriteLine();
+            Console.WriteLine(exception);
+            InsertLog(exception, specialMessage);
+            Console.WriteLine();
+            Console.ResetColor();
+        }
+
+        public static void WriteBlankLine(byte? count = null)
+        {
+            if (!count.HasValue)
+            {
+                count = 1;
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                Console.WriteLine();
+            }
+        }
+
+
+        public static void WriteLine(string message, ConsoleColor? consoleColor = null)
+        {
+            Write(message, consoleColor);
+            Console.WriteLine();
+        }
+
+        public static void Write(string message, ConsoleColor? consoleColor = null, bool notUseTime = false)
+        {
+            if (!consoleColor.HasValue)
+            {
+                consoleColor = ConsoleColor.Green;
+            }
+
+            WriteMessage(message, consoleColor.Value, notUseTime);
+            Console.ResetColor();
+        }
+
+        public static void WriteMessage(string message, ConsoleColor consoleColor, bool notUseTime = false)
+        {
+            if (string.IsNullOrEmpty(message))
+            {
+                return;
+            }
+
+            if (!notUseTime)
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write($"{DateTime.Now:HH:mm:ss}: ");
+            }
+
+            //var cursorLeft = Console.CursorLeft;
+
+            //if (cursorLeft > 10 && notUseTime)
+            //{
+            //    Console.WriteLine();
+            //}
+
+            Console.ForegroundColor = consoleColor;
+            Console.Write(message);
+            Console.ResetColor();
+        }
+
+        class LogLine
+        {
+            public string DateTimePrefix { get; set; }
+            public string MessageSuffix { get; set; }
         }
     }
 }

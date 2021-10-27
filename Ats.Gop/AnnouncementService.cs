@@ -11,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Ats.Gop
 {
@@ -57,31 +59,47 @@ namespace Ats.Gop
             }
         }
 
-        public void CheckDefinitions()
+        public List<AnnouncementDefinition> CheckDefinitions()
         {
             var messages = new List<Tuple<int, string>>();
 
-            var definitions = GetDefinitions();
+            ConsoleHelper.WriteBlankLine();
+            ConsoleHelper.Write($"Sistemde kayıtlı tüm adresler kontrol ediliyor...", ConsoleColor.White);
 
-            ConsoleHelper.WriteLine($"Toplam taranacak sayfa sayısı {definitions.Count}");
+            var checkedDefinitions = new List<AnnouncementDefinition>();
 
-            foreach (var item in definitions)
+            foreach (var item in GetDefinitions())
             {
-                if (driver.SessionId == null)
+                if (driver.Url == item.Url)
                 {
-                    break;
+                    checkedDefinitions.Add(item);
+                    continue;
                 }
 
                 driver.Navigate().GoToUrl(item.Url);
 
-                if (driver.Url == "about:blank")
+                if (driver.Url != item.Url)
                 {
-                    ConsoleHelper.Write($"Url erişimi başarısız => {item.Url}", ConsoleColor.Red);
+                    ConsoleHelper.Write($"-- Url erişimi başarısız => {item.Url}", ConsoleColor.Red);
+                }
+                else
+                {
+                    ConsoleHelper.Write($"-- Url erişimi başarılı! => {item.Url}", ConsoleColor.Blue);
+                    checkedDefinitions.Add(item);
+                }
+            }
 
-                    continue;
+            ConsoleHelper.WriteBlankLine();
+            ConsoleHelper.Write($"Geçerli Url adreslerinde ELEMENT kontrolleri yapılıyor...", ConsoleColor.White);
+
+            foreach (var item in checkedDefinitions)
+            {
+                if (driver.Url != item.Url)
+                {
+                    driver.Navigate().GoToUrl(item.Url);
                 }
 
-                ConsoleHelper.Write($"Url => {item.Url}");
+                ConsoleHelper.Write($" -'{item.Description}' sayfasında elementler kontrol ediliyor...", ConsoleColor.Blue);
 
                 try
                 {
@@ -96,12 +114,14 @@ namespace Ats.Gop
 
                         if (elements.Count == 1)
                         {
+                            ConsoleHelper.Write($" --{elements.Count} element bulundu...", ConsoleColor.Magenta);
+
                             elements.FirstOrDefault().Click();
                         }
                     }
                     catch (Exception ex)
                     {
-                        ConsoleHelper.WriteLine("Tıklama hatası!", ConsoleColor.Cyan);
+                        ConsoleHelper.WriteLine("Tıklama hatası!", ConsoleColor.Red);
                     }
 
                     var rows = new List<IWebElement>();
@@ -112,16 +132,16 @@ namespace Ats.Gop
                     }
                     catch (Exception ex)
                     {
-                        ConsoleHelper.WriteLine("Satırları alma hatası!", ConsoleColor.Cyan);
+                        ConsoleHelper.Write("Satırları alma hatası!", ConsoleColor.Red);
                         rows = null;
                     }
 
-                    if (rows == null || rows.Count == 0)
+                    if (rows == null)
                     {
-                        messages.Add(new Tuple<int, string>(0, item.Description));
-
-                        continue;
+                        rows = new List<IWebElement>();
                     }
+
+                    ConsoleHelper.Write($" --{rows.Count} satır bulundu...", ConsoleColor.Yellow);
 
                     messages.Add(new Tuple<int, string>(rows.Count, item.Description));
                 }
@@ -131,9 +151,8 @@ namespace Ats.Gop
                 }
             }
 
-            ConsoleHelper.WriteBlankLine(2);
-
-            ConsoleHelper.WriteLine($"Toplam bulunan sayfa sayısı {messages.Count}");
+            ConsoleHelper.WriteBlankLine();
+            ConsoleHelper.WriteLine($"Toplam incelenen sayfa sayısı: {messages.Count}");
 
             foreach (var item in messages)
             {
@@ -143,9 +162,11 @@ namespace Ats.Gop
                 }
                 else
                 {
-                    ConsoleHelper.Write($"0 satır => {item.Item2}", ConsoleColor.Cyan);
+                    ConsoleHelper.Write($"0 satır => {item.Item2}", ConsoleColor.Magenta);
                 }
             }
+
+            return checkedDefinitions.Where(x => messages.Any(y => y.Item2.Equals(x.Description) && y.Item1 > 0)).ToList();
         }
 
         // Publics
@@ -153,7 +174,13 @@ namespace Ats.Gop
         {
             var allAnnouncements = new List<Announcement>();
 
-            foreach (var item in GetDefinitions())
+            var newColorList = new List<int> { 9, 13, 14 }; // 1, 2, 3, 6, 10, 11,
+
+            var random = new Random();
+            var lastIndex = -1;
+            var selectedIndex = 0;
+
+            foreach (var item in CheckDefinitions())
             {
                 try
                 {
@@ -162,25 +189,41 @@ namespace Ats.Gop
                         break;
                     }
 
+                    ConsoleHelper.WriteBlankLine();
+
+                    do
+                    {
+                        selectedIndex = random.Next(newColorList.Count - 1);
+                    } while (selectedIndex == lastIndex);
+
+                    lastIndex = selectedIndex;
+
+                    var selectedConsoleColor = (ConsoleColor)newColorList.ElementAt(selectedIndex);
+
                     if (!driver.Url.Equals(item.Url))
                     {
-                        ConsoleHelper.WriteLine($"{item.Description} sayfasına gidiliyor. Lütfen bekleyiniz!");
-
                         driver.Navigate().GoToUrl(item.Url);
-
-                        ConsoleHelper.WriteLine($"{item.Url} sayfası açıldı!");
                     }
+
+                    if (!driver.Url.Equals(item.Url))
+                    {
+                        ConsoleHelper.Write($"{item.Url} sayfası açılamadı!", ConsoleColor.Red);
+
+                        continue;
+                    }
+
+                    ConsoleHelper.Write($"{item.Description} sayfasında yeni kayıtlar aranıyor...", selectedConsoleColor);
 
                     var list = GetAnnouncements(driver, item.TypeId, item.RowCssSelector, item.ClickCssSelector);
 
                     if (list == null || list.Count.Equals(0))
                     {
-                        ConsoleHelper.WriteLine($"Sayfada kaydedilecek yeni veri bulunamadı!");
+                        ConsoleHelper.Write($"Sayfada kaydedilecek yeni veri bulunamadı!", selectedConsoleColor);
 
                         continue;
                     }
 
-                    ConsoleHelper.WriteLine($"Bu sayfada {list.Count} bildirim bulundu!");
+                    ConsoleHelper.Write($"Bu sayfada veritabanına kaydedilecek {list.Count} adet yeni bildirim bulundu!", selectedConsoleColor);
 
                     allAnnouncements.AddRange(list);
                 }
@@ -190,6 +233,7 @@ namespace Ats.Gop
                 }
             }
 
+            ConsoleHelper.WriteBlankLine(2);
             ConsoleHelper.WriteLine($"Tüm sayfalarda bulunan toplam bildirim sayısı: {allAnnouncements.Count}!");
 
             if (allAnnouncements.Count > 0)
@@ -238,23 +282,25 @@ namespace Ats.Gop
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress("info@trxtarget.com"),
+                    From = new MailAddress(Constants.FromAddress, Constants.FromName),
                     Subject = $"Gop Üniversitesinden ({newEntities.Count}) Yeni Bildirim",
                     Body = body,
                     IsBodyHtml = true,
                 };
+
+                var cryptHelper = new CryptHelper();
 
                 foreach (var email in emails)
                 {
                     mailMessage.To.Clear();
                     mailMessage.To.Add(email.EmailAddress);
 
-                    using (var smtpClient = new SmtpClient("smtp.yandex.com.tr", 587)
+                    using (var smtpClient = new SmtpClient(Constants.SmtpHost, Constants.SmtpPort)
                     {
                         UseDefaultCredentials = false,
-                        Credentials = new NetworkCredential("info@trxtarget.com", "6157850x"),
+                        Credentials = new NetworkCredential(Constants.FromAddress, cryptHelper.Decrypt(EncryptedConstants.FromPassword)),
                         DeliveryMethod = SmtpDeliveryMethod.Network,
-                        EnableSsl = true
+                        EnableSsl = true,
                     })
                     {
                         smtpClient.Send(mailMessage);
@@ -279,9 +325,14 @@ namespace Ats.Gop
                 {
                     try
                     {
-                        ConsoleHelper.WriteLine($"Tıklanacak element bulundu: {clickCssSelector}!");
+                        var clickElement = driver.FindElement(By.CssSelector(clickCssSelector));
 
-                        driver.FindElement(By.CssSelector(clickCssSelector)).Click();
+                        if (clickElement == null)
+                        {
+                            ConsoleHelper.WriteLine($"Tıklanacak element bulunamadı: {clickCssSelector}!", ConsoleColor.Red);
+                        }
+
+                        clickElement.Click();
                     }
                     catch (Exception ex)
                     {
@@ -306,7 +357,7 @@ namespace Ats.Gop
                     return default;
                 }
 
-                ConsoleHelper.WriteLine($"Tablodaki kayıtlar inceleniyor! Toplam {rows.Count} satır veri bulundu!");
+                //ConsoleHelper.Write($"Tablodaki kayıtlar inceleniyor! İncelenecek toplam {rows.Count} satır veri bulundu!");
 
                 var target = new List<Announcement>();
 
@@ -380,7 +431,7 @@ namespace Ats.Gop
                     }
                 }
 
-                ConsoleHelper.WriteLine($"Tablodaki kayıt incelemeleri tamamlandı!");
+                //ConsoleHelper.Write($"Tablodaki kayıt incelemeleri tamamlandı!");
 
                 return target;
             }

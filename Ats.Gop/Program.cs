@@ -44,7 +44,12 @@ namespace Ats.Gop
                             return Task.CompletedTask;
                         }
 
-                        ConsoleHelper.WriteLine($"Programın sonlanmasına {totalSeconds - stopwatch.Elapsed.TotalSeconds:F0} saniye kaldı!", ConsoleColor.DarkGray);
+                        var remainingSeconds = (int)(totalSeconds - stopwatch.Elapsed.TotalSeconds);
+
+                        if (remainingSeconds < 10 || remainingSeconds % 60 == 0)
+                        {
+                            ConsoleHelper.Write($"Programın otomatik kapanmasına {remainingSeconds:F0} saniye kaldı!", ConsoleColor.DarkYellow);
+                        }
                     }
 
                     cancellationTokenSource.Cancel();

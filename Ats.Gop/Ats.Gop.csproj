@@ -90,9 +90,12 @@
       <DependentUpon>AtsModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="ConsoleHelper.cs" />
+    <Compile Include="Data\Constants.cs" />
+    <Compile Include="CryptHelper.cs" />
     <Compile Include="Email.cs">
       <DependentUpon>AtsModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\EncryptedConstants.cs" />
     <Compile Include="ExceptionLog.cs">
       <DependentUpon>AtsModel.tt</DependentUpon>
     </Compile>
