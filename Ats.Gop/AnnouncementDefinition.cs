@@ -14,6 +14,12 @@ namespace Ats.Gop
     
     public partial class AnnouncementDefinition
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public AnnouncementDefinition()
+        {
+            this.EmailAnnouncementDefinitions = new HashSet<EmailAnnouncementDefinition>();
+        }
+    
         public int PkId { get; set; }
         public string Url { get; set; }
         public byte TypeId { get; set; }
@@ -23,5 +29,7 @@ namespace Ats.Gop
         public bool Status { get; set; }
     
         public virtual AnnouncementType AnnouncementType { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EmailAnnouncementDefinition> EmailAnnouncementDefinitions { get; set; }
     }
 }

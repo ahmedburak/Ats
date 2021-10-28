@@ -12,6 +12,9 @@
         <EntityTypeShape EntityType="AtsModel.ExceptionLog" Width="1.5" PointX="5.75" PointY="3.75" IsExpanded="true" />
         <AssociationConnector Association="AtsModel.FK_AnnouncementDefinitions_AnnouncementTypes" ManuallyRouted="false" />
         <AssociationConnector Association="AtsModel.FK_Announcements_AnnouncementTypes" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="AtsModel.EmailAnnouncementDefinition" Width="1.5" PointX="8" PointY="1.375" />
+        <AssociationConnector Association="AtsModel.FK_EmailAnnouncementDefinitions_AnnouncementDefinitions" />
+        <AssociationConnector Association="AtsModel.FK_EmailAnnouncementDefinitions_Emails" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

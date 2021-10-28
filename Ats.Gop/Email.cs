@@ -14,7 +14,16 @@ namespace Ats.Gop
     
     public partial class Email
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Email()
+        {
+            this.EmailAnnouncementDefinitions = new HashSet<EmailAnnouncementDefinition>();
+        }
+    
         public int PkId { get; set; }
         public string EmailAddress { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EmailAnnouncementDefinition> EmailAnnouncementDefinitions { get; set; }
     }
 }

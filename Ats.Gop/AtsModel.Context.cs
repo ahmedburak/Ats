@@ -30,5 +30,6 @@ namespace Ats.Gop
         public virtual DbSet<AnnouncementType> AnnouncementTypes { get; set; }
         public virtual DbSet<Email> Emails { get; set; }
         public virtual DbSet<ExceptionLog> ExceptionLogs { get; set; }
+        public virtual DbSet<EmailAnnouncementDefinition> EmailAnnouncementDefinitions { get; set; }
     }
 }
