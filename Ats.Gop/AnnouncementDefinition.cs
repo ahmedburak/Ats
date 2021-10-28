@@ -20,6 +20,7 @@ namespace Ats.Gop
         public string RowCssSelector { get; set; }
         public string ClickCssSelector { get; set; }
         public string Description { get; set; }
+        public bool Status { get; set; }
     
         public virtual AnnouncementType AnnouncementType { get; set; }
     }

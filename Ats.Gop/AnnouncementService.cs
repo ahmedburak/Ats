@@ -447,7 +447,7 @@ namespace Ats.Gop
         {
             using (var db = new AtsEntities())
             {
-                return db.AnnouncementDefinitions.ToList();
+                return db.AnnouncementDefinitions.Where(x => x.Status == true).ToList();
             }
         }
 
