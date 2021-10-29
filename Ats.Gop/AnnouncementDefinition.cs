@@ -17,6 +17,7 @@ namespace Ats.Gop
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public AnnouncementDefinition()
         {
+            this.Announcements = new HashSet<Announcement>();
             this.EmailAnnouncementDefinitions = new HashSet<EmailAnnouncementDefinition>();
         }
     
@@ -29,6 +30,8 @@ namespace Ats.Gop
         public bool Status { get; set; }
     
         public virtual AnnouncementType AnnouncementType { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Announcement> Announcements { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EmailAnnouncementDefinition> EmailAnnouncementDefinitions { get; set; }
     }

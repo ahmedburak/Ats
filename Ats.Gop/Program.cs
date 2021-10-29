@@ -15,7 +15,7 @@ namespace Ats.Gop
         {
             try
             {
-                Stopwatch stopwatch = new Stopwatch();
+                var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
                 //await Task.Run(() =>

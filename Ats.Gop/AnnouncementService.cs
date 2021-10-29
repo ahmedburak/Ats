@@ -114,7 +114,7 @@ namespace Ats.Gop
 
                         if (elements.Count == 1)
                         {
-                            ConsoleHelper.Write($" --{elements.Count} element bulundu...", ConsoleColor.Magenta);
+                            //ConsoleHelper.Write($" --{elements.Count} element bulundu...", ConsoleColor.Magenta);
 
                             elements.FirstOrDefault().Click();
                         }
@@ -214,7 +214,7 @@ namespace Ats.Gop
 
                     ConsoleHelper.Write($"{item.Description} sayfasında yeni kayıtlar aranıyor...", selectedConsoleColor);
 
-                    var list = GetAnnouncements(driver, item.TypeId, item.RowCssSelector, item.ClickCssSelector);
+                    var list = GetAnnouncements(driver, item.PkId, item.RowCssSelector, item.ClickCssSelector);
 
                     if (list == null || list.Count.Equals(0))
                     {
@@ -236,75 +236,88 @@ namespace Ats.Gop
             ConsoleHelper.WriteBlankLine(2);
             ConsoleHelper.WriteLine($"Tüm sayfalarda bulunan toplam bildirim sayısı: {allAnnouncements.Count}!");
 
+            var now = DateTime.Now;
+
+            allAnnouncements.ForEach(x => x.CreateDate = now);
+
             if (allAnnouncements.Count > 0)
             {
                 using (var db = new AtsEntities())
                 {
-                    var emails = db.Emails.ToList();
-                    var mailResult = SendMailForNewSavedAnnounces(allAnnouncements, emails);
-
-                    if (mailResult)
+                    try
                     {
-                        try
-                        {
-                            db.Announcements.AddRange(allAnnouncements);
-                            db.SaveChanges();
-                        }
-                        catch (Exception ex)
-                        {
-                            ConsoleHelper.WriteLine(ex, "Kayıt hatası!");
-
-                            //db.Rollback();
-                        }
+                        db.Announcements.AddRange(allAnnouncements);
+                        db.SaveChanges();
                     }
+                    catch (Exception ex)
+                    {
+                        //db.Rollback();
+
+                        ConsoleHelper.WriteLine(ex, "Kayıt hatası!");
+                    }
+
+                    var mailResult = SendMailForNewSavedAnnounces(now);
                 }
             }
         }
 
         // Privates
-        private bool SendMailForNewSavedAnnounces(List<Announcement> newEntities, List<Email> emails)
+        private bool SendMailForNewSavedAnnounces(DateTime dateTime)
         {
             try
             {
-                var body = string.Empty;
-
-                foreach (var item in newEntities)
+                if (dateTime == null || dateTime == DateTime.MinValue)
                 {
-                    body += $"<a href='{item.Url}'>{item.Text}</a></br>";
+                    return false;
                 }
-
-                var templateFileFullName = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.FullName, "email_template.html");
-
-                if (File.Exists(templateFileFullName))
-                {
-                    //body = File.ReadAllText(templateFileFullName);
-                }
-
-                var mailMessage = new MailMessage
-                {
-                    From = new MailAddress(Constants.FromAddress, Constants.FromName),
-                    Subject = $"Gop Üniversitesinden ({newEntities.Count}) Yeni Bildirim",
-                    Body = body,
-                    IsBodyHtml = true,
-                };
 
                 var cryptHelper = new CryptHelper();
 
-                foreach (var email in emails)
+                using (var db = new AtsEntities())
                 {
-                    mailMessage.To.Clear();
-                    mailMessage.To.Add(email.EmailAddress);
+                    var newEntities = db.Announcements.Where(x => x.CreateDate.Day == dateTime.Day && x.CreateDate.Month == dateTime.Month && x.CreateDate.Year == dateTime.Year).ToList();
+                    var emails = db.Emails.ToList();
 
-                    using (var smtpClient = new SmtpClient(Constants.SmtpHost, Constants.SmtpPort)
+                    foreach (var email in emails)
                     {
-                        UseDefaultCredentials = false,
-                        Credentials = new NetworkCredential(Constants.FromAddress, cryptHelper.Decrypt(EncryptedConstants.FromPassword)),
-                        DeliveryMethod = SmtpDeliveryMethod.Network,
-                        EnableSsl = true,
-                    })
-                    {
-                        smtpClient.Send(mailMessage);
-                    };
+                        var filteredEntities = newEntities.Where(x => x.AnnouncementDefinition.EmailAnnouncementDefinitions.Any(y => y.EmailId.Equals(email.PkId))).ToList();
+
+                        var body = string.Empty;
+
+                        foreach (var item in filteredEntities)
+                        {
+                            body += $"<a href='{item.Url}'>{item.Text}</a></br>";
+                        }
+
+                        var templateFileFullName = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.FullName, "email_template.html");
+
+                        if (File.Exists(templateFileFullName))
+                        {
+                            //body = File.ReadAllText(templateFileFullName);
+                        }
+
+                        var mailMessage = new MailMessage
+                        {
+                            From = new MailAddress(Constants.FromAddress, Constants.FromName),
+                            Subject = $"Gop Üniversitesinden ({filteredEntities.Count}) Yeni Bildirim",
+                            Body = body,
+                            IsBodyHtml = true,
+                        };
+
+                        mailMessage.To.Clear();
+                        mailMessage.To.Add(email.EmailAddress);
+
+                        using (var smtpClient = new SmtpClient(Constants.SmtpHost, Constants.SmtpPort)
+                        {
+                            UseDefaultCredentials = false,
+                            Credentials = new NetworkCredential(Constants.FromAddress, cryptHelper.Decrypt(EncryptedConstants.FromPassword)),
+                            DeliveryMethod = SmtpDeliveryMethod.Network,
+                            EnableSsl = true,
+                        })
+                        {
+                            smtpClient.Send(mailMessage);
+                        };
+                    }
                 }
 
                 return true;
@@ -317,7 +330,7 @@ namespace Ats.Gop
             }
         }
 
-        private List<Announcement> GetAnnouncements(RemoteWebDriver driver, byte typeId, string rowsCssSelector, string clickCssSelector)
+        private List<Announcement> GetAnnouncements(RemoteWebDriver driver, int announcementDefinitionId, string rowsCssSelector, string clickCssSelector)
         {
             try
             {
@@ -421,7 +434,8 @@ namespace Ats.Gop
                                 Text = text,
                                 Url = url,
                                 Date = date,
-                                TypeId = typeId,
+                                AnnouncementDefinitionId = announcementDefinitionId,
+                                //CreateDate = DateTime.Now,
                             });
                         }
                         catch (Exception ex)

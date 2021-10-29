@@ -92,10 +92,10 @@
     <Compile Include="ConsoleHelper.cs" />
     <Compile Include="Data\Constants.cs" />
     <Compile Include="CryptHelper.cs" />
+    <Compile Include="Data\EncryptedConstants.cs" />
     <Compile Include="Email.cs">
       <DependentUpon>AtsModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Data\EncryptedConstants.cs" />
     <Compile Include="EmailAnnouncementDefinition.cs">
       <DependentUpon>AtsModel.tt</DependentUpon>
     </Compile>

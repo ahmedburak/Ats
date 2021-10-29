@@ -28,8 +28,8 @@ namespace Ats.Gop
         public virtual DbSet<AnnouncementDefinition> AnnouncementDefinitions { get; set; }
         public virtual DbSet<Announcement> Announcements { get; set; }
         public virtual DbSet<AnnouncementType> AnnouncementTypes { get; set; }
+        public virtual DbSet<EmailAnnouncementDefinition> EmailAnnouncementDefinitions { get; set; }
         public virtual DbSet<Email> Emails { get; set; }
         public virtual DbSet<ExceptionLog> ExceptionLogs { get; set; }
-        public virtual DbSet<EmailAnnouncementDefinition> EmailAnnouncementDefinitions { get; set; }
     }
 }

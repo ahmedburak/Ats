@@ -15,11 +15,12 @@ namespace Ats.Gop
     public partial class Announcement
     {
         public int PkId { get; set; }
-        public byte TypeId { get; set; }
+        public int AnnouncementDefinitionId { get; set; }
         public string Text { get; set; }
         public string Url { get; set; }
         public System.DateTime Date { get; set; }
+        public System.DateTime CreateDate { get; set; }
     
-        public virtual AnnouncementType AnnouncementType { get; set; }
+        public virtual AnnouncementDefinition AnnouncementDefinition { get; set; }
     }
 }

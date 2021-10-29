@@ -4,17 +4,17 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="2f3a77665673469290523ecfae4a5f61" Name="Diagram1">
-        <EntityTypeShape EntityType="AtsModel.AnnouncementDefinition" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="AtsModel.Announcement" Width="1.5" PointX="3" PointY="4.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="AtsModel.AnnouncementType" Width="1.5" PointX="0.75" PointY="2.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="AtsModel.Email" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="AtsModel.ExceptionLog" Width="1.5" PointX="5.75" PointY="3.75" IsExpanded="true" />
+      <Diagram DiagramId="c5dc1ed26b6b44e5a013a50288d7b135" Name="Diagram1">
+        <EntityTypeShape EntityType="AtsModel.AnnouncementDefinition" Width="1.5" PointX="3" PointY="3.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="AtsModel.Announcement" Width="1.5" PointX="5.25" PointY="3.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="AtsModel.AnnouncementType" Width="1.5" PointX="0.75" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="AtsModel.EmailAnnouncementDefinition" Width="1.5" PointX="5.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AtsModel.Email" Width="1.5" PointX="3" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="AtsModel.ExceptionLog" Width="1.5" PointX="5.75" PointY="6.875" IsExpanded="true" />
         <AssociationConnector Association="AtsModel.FK_AnnouncementDefinitions_AnnouncementTypes" ManuallyRouted="false" />
-        <AssociationConnector Association="AtsModel.FK_Announcements_AnnouncementTypes" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="AtsModel.EmailAnnouncementDefinition" Width="1.5" PointX="8" PointY="1.375" />
-        <AssociationConnector Association="AtsModel.FK_EmailAnnouncementDefinitions_AnnouncementDefinitions" />
-        <AssociationConnector Association="AtsModel.FK_EmailAnnouncementDefinitions_Emails" />
+        <AssociationConnector Association="AtsModel.FK_Announcements_AnnouncementDefinitions" ManuallyRouted="false" />
+        <AssociationConnector Association="AtsModel.FK_EmailAnnouncementDefinitions_AnnouncementDefinitions" ManuallyRouted="false" />
+        <AssociationConnector Association="AtsModel.FK_EmailAnnouncementDefinitions_Emails" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
