@@ -6,13 +6,12 @@ using OpenQA.Selenium.Remote;
 
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Ats.Gop
 {
@@ -67,6 +66,7 @@ namespace Ats.Gop
             ConsoleHelper.Write($"Sistemde kayıtlı tüm adresler kontrol ediliyor...", ConsoleColor.White);
 
             var checkedDefinitions = new List<AnnouncementDefinition>();
+            var failedUrls = new List<AnnouncementDefinition>();
 
             foreach (var item in GetDefinitions())
             {
@@ -81,11 +81,48 @@ namespace Ats.Gop
                 if (driver.Url != item.Url)
                 {
                     ConsoleHelper.Write($"-- Url erişimi başarısız => {item.Url}", ConsoleColor.Red);
+
+                    item.Status = false;
+
+                    failedUrls.Add(item);
                 }
                 else
                 {
                     ConsoleHelper.Write($"-- Url erişimi başarılı! => {item.Url}", ConsoleColor.Blue);
                     checkedDefinitions.Add(item);
+                }
+            }
+
+            if (failedUrls.Count > 0)
+            {
+                using (var db = new AtsEntities())
+                {
+                    var savedCount = 0;
+
+                    try
+                    {
+                        foreach (var item in failedUrls)
+                        {
+                            db.Entry(item).State = EntityState.Modified;
+                        }
+
+                        savedCount = db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        //db.Rollback();
+
+                        ConsoleHelper.WriteLine(ex, "Kayıt hatası!");
+                    }
+
+                    if (savedCount > 0)
+                    {
+                        ConsoleHelper.WriteLine($"{savedCount} adet URL erişim problemi nedeniyle pasif olarak işaretlendi!", ConsoleColor.Red);
+                    }
+                    else
+                    {
+                        ConsoleHelper.WriteLine("Veritabanına güncelleme atılırken bir sorun meydana geldi!");
+                    }
                 }
             }
 
@@ -244,10 +281,12 @@ namespace Ats.Gop
             {
                 using (var db = new AtsEntities())
                 {
+                    var savedCount = 0;
+
                     try
                     {
                         db.Announcements.AddRange(allAnnouncements);
-                        db.SaveChanges();
+                        savedCount = db.SaveChanges();
                     }
                     catch (Exception ex)
                     {
@@ -256,7 +295,14 @@ namespace Ats.Gop
                         ConsoleHelper.WriteLine(ex, "Kayıt hatası!");
                     }
 
-                    var mailResult = SendMailForNewSavedAnnounces(now);
+                    if (savedCount > 0)
+                    {
+                        var mailResult = SendMailForNewSavedAnnounces(now);
+                    }
+                    else
+                    {
+                        ConsoleHelper.WriteLine("Bulunan yeni bildirimler veritabanına kaydedilemedi!", ConsoleColor.Red);
+                    }
                 }
             }
         }
@@ -281,6 +327,11 @@ namespace Ats.Gop
                     foreach (var email in emails)
                     {
                         var filteredEntities = newEntities.Where(x => x.AnnouncementDefinition.EmailAnnouncementDefinitions.Any(y => y.EmailId.Equals(email.PkId))).ToList();
+
+                        if (filteredEntities.Count != newEntities.Count)
+                        {
+                            ConsoleHelper.WriteLine("Bazı bildirimler (tanımlı ayarlar gereği) filtrelendi!", ConsoleColor.Red);
+                        }
 
                         var body = string.Empty;
 

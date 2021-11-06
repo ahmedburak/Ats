@@ -61,6 +61,9 @@ namespace Ats.Gop
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(3)); // Cancellation Task'ı önce çalışsın diye biraz bekliyor.
 
+                    /*
+  update [Ats].[dbo].[AnnouncementDefinitions] set Status = 1 where Url like '%www.gop.edu.tr%' or Url like '%niksarmyo%'
+                     */
                     using (var announcementService = new AnnouncementService())
                     {
                         announcementService.Execute();
