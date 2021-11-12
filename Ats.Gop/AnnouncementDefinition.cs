@@ -27,9 +27,11 @@ namespace Ats.Gop
         public string RowCssSelector { get; set; }
         public string ClickCssSelector { get; set; }
         public string Description { get; set; }
+        public int SectionId { get; set; }
         public bool Status { get; set; }
     
         public virtual AnnouncementType AnnouncementType { get; set; }
+        public virtual Section Section { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Announcement> Announcements { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

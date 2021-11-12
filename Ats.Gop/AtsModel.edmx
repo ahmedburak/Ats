@@ -15,6 +15,7 @@
           <Property Name="RowCssSelector" Type="nvarchar" MaxLength="500" Nullable="false" />
           <Property Name="ClickCssSelector" Type="nvarchar" MaxLength="500" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="SectionId" Type="int" Nullable="false" />
           <Property Name="Status" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Announcements">
@@ -61,6 +62,13 @@
           <Property Name="StackTrace" Type="nvarchar" MaxLength="4000" Nullable="false" />
           <Property Name="ExceptionDateTime" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="Sections">
+          <Key>
+            <PropertyRef Name="PkId" />
+          </Key>
+          <Property Name="PkId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="500" Nullable="false" />
+        </EntityType>
         <Association Name="FK_AnnouncementDefinitions_AnnouncementTypes">
           <End Role="AnnouncementTypes" Type="Self.AnnouncementTypes" Multiplicity="1" />
           <End Role="AnnouncementDefinitions" Type="Self.AnnouncementDefinitions" Multiplicity="*" />
@@ -70,6 +78,18 @@
             </Principal>
             <Dependent Role="AnnouncementDefinitions">
               <PropertyRef Name="TypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AnnouncementDefinitions_Sections">
+          <End Role="Sections" Type="Self.Sections" Multiplicity="1" />
+          <End Role="AnnouncementDefinitions" Type="Self.AnnouncementDefinitions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sections">
+              <PropertyRef Name="PkId" />
+            </Principal>
+            <Dependent Role="AnnouncementDefinitions">
+              <PropertyRef Name="SectionId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -116,8 +136,13 @@
           <EntitySet Name="EmailAnnouncementDefinitions" EntityType="Self.EmailAnnouncementDefinitions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Emails" EntityType="Self.Emails" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ExceptionLogs" EntityType="Self.ExceptionLogs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Sections" EntityType="Self.Sections" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_AnnouncementDefinitions_AnnouncementTypes" Association="Self.FK_AnnouncementDefinitions_AnnouncementTypes">
             <End Role="AnnouncementTypes" EntitySet="AnnouncementTypes" />
+            <End Role="AnnouncementDefinitions" EntitySet="AnnouncementDefinitions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AnnouncementDefinitions_Sections" Association="Self.FK_AnnouncementDefinitions_Sections">
+            <End Role="Sections" EntitySet="Sections" />
             <End Role="AnnouncementDefinitions" EntitySet="AnnouncementDefinitions" />
           </AssociationSet>
           <AssociationSet Name="FK_Announcements_AnnouncementDefinitions" Association="Self.FK_Announcements_AnnouncementDefinitions">
@@ -148,8 +173,10 @@
           <Property Name="RowCssSelector" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="ClickCssSelector" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SectionId" Type="Int32" Nullable="false" />
           <Property Name="Status" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="AnnouncementType" Relationship="Self.FK_AnnouncementDefinitions_AnnouncementTypes" FromRole="AnnouncementDefinitions" ToRole="AnnouncementTypes" />
+          <NavigationProperty Name="Section" Relationship="Self.FK_AnnouncementDefinitions_Sections" FromRole="AnnouncementDefinitions" ToRole="Sections" />
           <NavigationProperty Name="Announcements" Relationship="Self.FK_Announcements_AnnouncementDefinitions" FromRole="AnnouncementDefinitions" ToRole="Announcements" />
           <NavigationProperty Name="EmailAnnouncementDefinitions" Relationship="Self.FK_EmailAnnouncementDefinitions_AnnouncementDefinitions" FromRole="AnnouncementDefinitions" ToRole="EmailAnnouncementDefinitions" />
         </EntityType>
@@ -202,6 +229,14 @@
           <Property Name="StackTrace" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="ExceptionDateTime" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
+        <EntityType Name="Section">
+          <Key>
+            <PropertyRef Name="PkId" />
+          </Key>
+          <Property Name="PkId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AnnouncementDefinitions" Relationship="Self.FK_AnnouncementDefinitions_Sections" FromRole="Sections" ToRole="AnnouncementDefinitions" />
+        </EntityType>
         <Association Name="FK_AnnouncementDefinitions_AnnouncementTypes">
           <End Role="AnnouncementTypes" Type="Self.AnnouncementType" Multiplicity="1" />
           <End Role="AnnouncementDefinitions" Type="Self.AnnouncementDefinition" Multiplicity="*" />
@@ -211,6 +246,18 @@
             </Principal>
             <Dependent Role="AnnouncementDefinitions">
               <PropertyRef Name="TypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AnnouncementDefinitions_Sections">
+          <End Role="Sections" Type="Self.Section" Multiplicity="1" />
+          <End Role="AnnouncementDefinitions" Type="Self.AnnouncementDefinition" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sections">
+              <PropertyRef Name="PkId" />
+            </Principal>
+            <Dependent Role="AnnouncementDefinitions">
+              <PropertyRef Name="SectionId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -257,8 +304,13 @@
           <EntitySet Name="EmailAnnouncementDefinitions" EntityType="Self.EmailAnnouncementDefinition" />
           <EntitySet Name="Emails" EntityType="Self.Email" />
           <EntitySet Name="ExceptionLogs" EntityType="Self.ExceptionLog" />
+          <EntitySet Name="Sections" EntityType="Self.Section" />
           <AssociationSet Name="FK_AnnouncementDefinitions_AnnouncementTypes" Association="Self.FK_AnnouncementDefinitions_AnnouncementTypes">
             <End Role="AnnouncementTypes" EntitySet="AnnouncementTypes" />
+            <End Role="AnnouncementDefinitions" EntitySet="AnnouncementDefinitions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AnnouncementDefinitions_Sections" Association="Self.FK_AnnouncementDefinitions_Sections">
+            <End Role="Sections" EntitySet="Sections" />
             <End Role="AnnouncementDefinitions" EntitySet="AnnouncementDefinitions" />
           </AssociationSet>
           <AssociationSet Name="FK_Announcements_AnnouncementDefinitions" Association="Self.FK_Announcements_AnnouncementDefinitions">
@@ -289,6 +341,7 @@
                 <ScalarProperty Name="RowCssSelector" ColumnName="RowCssSelector" />
                 <ScalarProperty Name="ClickCssSelector" ColumnName="ClickCssSelector" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="SectionId" ColumnName="SectionId" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -339,6 +392,14 @@
                 <ScalarProperty Name="InnerException" ColumnName="InnerException" />
                 <ScalarProperty Name="StackTrace" ColumnName="StackTrace" />
                 <ScalarProperty Name="ExceptionDateTime" ColumnName="ExceptionDateTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sections">
+            <EntityTypeMapping TypeName="AtsModel.Section">
+              <MappingFragment StoreEntitySet="Sections">
+                <ScalarProperty Name="PkId" ColumnName="PkId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
