@@ -333,11 +333,19 @@ namespace Ats.Gop
                             ConsoleHelper.WriteLine("Bazı bildirimler (tanımlı ayarlar gereği) filtrelendi!", ConsoleColor.Red);
                         }
 
-                        var body = string.Empty;
+                        var body = $"<h1>Ats Yeni Bildirimler ({newEntities.Min(x => x.Date.ToString("dd MMMM"))} - Bugün)</h1>";
 
-                        foreach (var item in filteredEntities)
+                        var groupass = filteredEntities.GroupBy(x => x.AnnouncementDefinition.SectionId);
+
+                        foreach (var group in groupass)
                         {
-                            body += $"<a href='{item.Url}'>{item.Text}</a></br>";
+                            // her yeni group için yeni bir başlık at.
+                            body += $"<h2>{group.FirstOrDefault().AnnouncementDefinition.Section.Name}</h2>";
+
+                            foreach (var item in group.ToList())
+                            {
+                                body += $"<a href='{item.Url}'>{item.Text}</a><br>";
+                            }
                         }
 
                         var templateFileFullName = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.FullName, "email_template.html");
