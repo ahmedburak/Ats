@@ -328,12 +328,7 @@ namespace Ats.Gop
                     {
                         var filteredEntities = newEntities.Where(x => x.AnnouncementDefinition.EmailAnnouncementDefinitions.Any(y => y.EmailId.Equals(email.PkId))).ToList();
 
-                        if (filteredEntities.Count != newEntities.Count)
-                        {
-                            ConsoleHelper.WriteLine("Bazı bildirimler (tanımlı ayarlar gereği) filtrelendi!", ConsoleColor.Red);
-                        }
-
-                        var body = $"<h1>Ats Yeni Bildirimler ({newEntities.Min(x => x.Date.ToString("dd MMMM"))} - Bugün)</h1>";
+                        var body = $"<h1>Ats Yeni Bildirimler ({newEntities.Min(x => x.Date.ToString("dd MMMM"))} - {dateTime:dd MMMM})</h1>";
 
                         var groupass = filteredEntities.GroupBy(x => x.AnnouncementDefinition.SectionId);
 
@@ -346,6 +341,14 @@ namespace Ats.Gop
                             {
                                 body += $"<a href='{item.Url}'>{item.Text}</a><br>";
                             }
+                        }
+
+                        if (filteredEntities.Count != newEntities.Count)
+                        {
+                            var filterMessage = "Bazı bildirimler (tanımlı ayarlar gereği) filtrelendi!";
+
+                            body+= $"<br><br><br><h6>{filterMessage}</h6>";
+                            ConsoleHelper.WriteLine(filterMessage, ConsoleColor.Red);
                         }
 
                         var templateFileFullName = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.FullName, "email_template.html");
