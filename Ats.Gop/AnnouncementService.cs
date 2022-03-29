@@ -301,7 +301,9 @@ namespace Ats.Gop
                     }
                     else
                     {
+                        ConsoleHelper.WriteBlankLine(5);
                         ConsoleHelper.WriteLine("Bulunan yeni bildirimler veritabanına kaydedilemedi!", ConsoleColor.Red);
+                        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(5));
                     }
                 }
             }
@@ -347,7 +349,7 @@ namespace Ats.Gop
                         {
                             var filterMessage = "Bazı bildirimler (tanımlı ayarlar gereği) filtrelendi!";
 
-                            body+= $"<br><br><br><h6>{filterMessage}</h6>";
+                            body += $"<br><br><br><h6>{filterMessage}</h6>";
                             ConsoleHelper.WriteLine(filterMessage, ConsoleColor.Red);
                         }
 

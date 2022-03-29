@@ -2,7 +2,7 @@
 {
     internal static class Constants
     {
-        internal const string SmtpHost = "smtp.live.com";
+        internal const string SmtpHost = "smtp.office365.com";
         internal const int SmtpPort = 587;
 
         internal const string FromName = "Ahmed Burak";
